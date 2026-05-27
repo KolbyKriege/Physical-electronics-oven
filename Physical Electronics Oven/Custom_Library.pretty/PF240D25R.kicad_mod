@@ -1,0 +1,124 @@
+(footprint "PF240D25R"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -6 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "bcffe525-fec6-45d1-a28b-512379c8c4c2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "PF240D25R"
+		(at 0 -4.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "a2376194-cc53-4da2-8bfd-7e38f631bafb")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4fcbc42a-b46e-4729-8ec3-5fea734599a5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f3ae3c54-2ee0-4f61-9d24-0565309f8931")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -7.5 -18)
+		(end 34.5 4)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "9a64dd4b-86b3-4caf-bdaa-dd49218b699b")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -3 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "252cd569-f58a-4730-acb4-16fe00713853")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 1.905 1.905)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "9fa2c5cd-a26a-4ca8-bdd6-467abf0fc801")
+	)
+	(pad "2" thru_hole circle
+		(at 10.2 0)
+		(size 1.905 1.905)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "dfe69f0f-17c9-40c9-920a-d02a360f6772")
+	)
+	(pad "3" thru_hole circle
+		(at 22.9 0)
+		(size 1.905 1.905)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "6ca5ed55-1f75-49d9-ad70-12294a7a8ed5")
+	)
+	(pad "4" thru_hole circle
+		(at 27.9 0)
+		(size 1.905 1.905)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7ed66c7d-dd73-4168-a78c-cc8355d30e52")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/Custom_Library.pretty/sensata-pf-series-pcb-mount-ssr-drawing.step"
+		(offset
+			(xyz -575 379 -1005)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 90 -180 -0)
+		)
+	)
+)
