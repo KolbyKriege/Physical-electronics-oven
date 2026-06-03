@@ -2,20 +2,24 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-// ── Full-step state-machine (mirrors MicroPython rotary.py) ──────────────────
+// ── Full-step state machine ───────────────────────────────────────────────────
 //
-// Index: current_state[2:0]
-// Columns: input (CLK<<1 | DT)   00  01  10  11
+// Table index  = current state (low 3 bits)
+// Table column = pin input (CLK<<1 | DT):  00  01  10  11
+//
+// Direction flags encoded in upper nibble of next-state byte:
+//   0x10 = completed a CW  detent
+//   0x20 = completed a CCW detent
 //
 static const uint8_t TRANSITION_TABLE[8][4] = {
-    {0x00, 0x04, 0x01, 0x00},  // R_START (0)
-    {0x02, 0x00, 0x01, 0x00},  // R_CW_1  (1)
-    {0x02, 0x03, 0x01, 0x00},  // R_CW_2  (2)
-    {0x02, 0x03, 0x00, 0x30},  // R_CW_3  (3)  0x30 = START | DIR_CW
-    {0x05, 0x04, 0x00, 0x00},  // R_CCW_1 (4)
-    {0x05, 0x04, 0x06, 0x00},  // R_CCW_2 (5)
-    {0x05, 0x00, 0x06, 0x20},  // R_CCW_3 (6)  0x20 = START | DIR_CCW
-    {0x00, 0x00, 0x00, 0x00},  // R_ILLEGAL(7)
+    {0x00, 0x04, 0x01, 0x00},  // R_START
+    {0x02, 0x00, 0x01, 0x00},  // R_CW_1
+    {0x02, 0x03, 0x01, 0x00},  // R_CW_2
+    {0x02, 0x03, 0x00, 0x10},  // R_CW_3  → emits CW  (was 0x30, wrong flag)
+    {0x05, 0x04, 0x00, 0x00},  // R_CCW_1
+    {0x05, 0x04, 0x06, 0x00},  // R_CCW_2
+    {0x05, 0x00, 0x06, 0x20},  // R_CCW_3 → emits CCW
+    {0x00, 0x00, 0x00, 0x00},  // R_ILLEGAL
 };
 
 static constexpr uint8_t STATE_MASK = 0x07;
@@ -41,6 +45,8 @@ RotaryEncoder::RotaryEncoder(uint clk_pin, uint dt_pin)
     gpio_set_dir(dt_pin, GPIO_IN);
     gpio_pull_up(dt_pin);
 
+    // Trigger on both edges of both pins — the state machine needs to see
+    // every transition to correctly decode the quadrature signal.
     gpio_set_irq_enabled_with_callback(clk_pin,
         GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL,
         true, &RotaryEncoder::gpio_irq_handler);
@@ -55,13 +61,16 @@ void RotaryEncoder::gpio_irq_handler(uint gpio, uint32_t events) {
 }
 
 void RotaryEncoder::process() {
-    uint8_t clk_val = gpio_get(clk_pin) ? 1 : 0;
-    uint8_t dt_val  = gpio_get(dt_pin)  ? 1 : 0;
+    // Read both pins simultaneously to get a consistent snapshot
+    uint32_t gpio_state = gpio_get_all();
+    uint8_t clk_val = (gpio_state >> clk_pin) & 1;
+    uint8_t dt_val  = (gpio_state >> dt_pin)  & 1;
     uint8_t pins    = (clk_val << 1) | dt_val;
 
-    enc_state = TRANSITION_TABLE[enc_state & STATE_MASK][pins];
+    uint8_t next = TRANSITION_TABLE[enc_state & STATE_MASK][pins];
+    enc_state = next & STATE_MASK;  // store only state bits
 
-    uint8_t direction = enc_state & DIR_MASK;
+    uint8_t direction = next & DIR_MASK;
     if (direction == DIR_CW) {
         pos++;
         delta++;

@@ -242,8 +242,8 @@ int main() {
 
         curr_temp = sensor.temperature();
 
-        // Heartbeat LED — toggle every 500 ms
-        gpio_put(LED_PIN, (now_ms / 500) % 2 == 0);
+        // Heartbeat LED — toggle every 500 ms (active LOW)
+        gpio_put(LED_PIN, ((now_ms / 500) % 2 == 0));
 
         // ════════════════════════════════════════════════════════════════════
         // RUNNING state
